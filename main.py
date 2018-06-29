@@ -3,30 +3,40 @@
 import sqlite3
 import requests
 
+def fetch_json(url):
+    url = update_url(url)
+    r = requests.get(url)
+    r.raise_for_status()
+    return r.json()
+
+
+def update_url(old_url):
+    return old_url.replace('http://data', 'http://lda.data')
+
 
 page_size = 50
-r = requests.get(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}')
-r.raise_for_status()
-entries = r.json()
+entries = fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}')
 
 total_results = entries['result']['totalResults']
 n_requests = total_results // page_size + 1
 print(f'Making {n_requests} requests')
 
 for request_id in range(n_requests):
-    r = requests.get(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
-    r.raise_for_status()
-    result = r.json()
+    result = fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
     entries = result['result']['items']
     for entry in entries:
         constituency = entry['constituency']['label']['_value']
         election_label = entry['election']['label']['_value']
 
-        about_link = entry['_about'].replace('http://data', 'http://lda.data') + '.json'
-        r = requests.get(about_link)
-        r.raise_for_status()
-        details = r.json()
-        print(details)
+        about_link = entry['_about'] + '.json'
+        details = fetch_json(about_link)
+        candidates = details['result']['primaryTopic']['candidate']
+
+        for candidate in candidates:
+            url = candidate + '.json'
+            print(candidate)
+            break
+
         break
 
 # {'_about': 'http://data.parliament.uk/resources/382488', 'constituency':
