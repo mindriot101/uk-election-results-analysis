@@ -32,9 +32,12 @@ for request_id in range(n_requests):
         details = fetch_json(about_link)
         candidates = details['result']['primaryTopic']['candidate']
 
-        for candidate in candidates:
-            url = candidate + '.json'
-            print(url)
+        for candidate_url in candidates:
+            url = candidate_url + '.json'
+            candidate = fetch_json(url)
+            print(candidate)
+
+            break
 
         break
 
