@@ -63,14 +63,15 @@ def main():
     page_size = args.n_per_page
 
     client = Client()
-    entries = client.fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}')
+    entries = client.fetch_json('http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}'.format(page_size=page_size))
 
     total_results = entries['result']['totalResults']
     n_requests = total_results // page_size + 1
     logger.info('Making %s requests', n_requests)
 
     for request_id in trange(n_requests):
-        election_results = client.fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
+        election_results = client.fetch_json('http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id}'.format(
+            page_size=page_size, request_id=request_id + 1))
         entries = election_results['result']['items']
 
         for entry in entries:
