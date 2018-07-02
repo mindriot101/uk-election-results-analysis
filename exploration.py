@@ -16,8 +16,7 @@ def update_url(old_url):
     return old_url.replace('http://data', 'http://lda.data')
 
 
-# TODO: up this
-page_size = 1 
+page_size = 50
 
 entries = fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}')
 
@@ -26,17 +25,42 @@ n_requests = total_results // page_size + 1
 print(f'Making {n_requests} requests')
 
 for request_id in range(n_requests):
-    result = fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
-    entries = result['result']['items']
+    election_results = fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
+    entries = election_results['result']['items']
     for entry in entries:
-        constituency = entry['constituency']['label']['_value']
-        election_label = entry['election']['label']['_value']
+        # Extract constituency info
+        constituency_url = entry['constituency']['_about']
+        constituency_info = fetch_json(constituency_url + '.json')
 
-        about_link = entry['_about'] + '.json'
-        details = fetch_json(about_link)
+        constituency_type = constituency_info['result']['primaryTopic']['constituencyType']
+        constituency_name = constituency_info['result']['primaryTopic']['label']['_value']
+        constituency_os_name = constituency_info['result']['primaryTopic']['osName']
 
-        candidates = details['result'][ 'primaryTopic']['candidate']
-        for candidate_url in candidates:
-            url = candidate_url + '.json'
-            candidate = fetch_json(url)
+        # Extract election info
+
+        election_url = entry['_about']
+        election_info = fetch_json(election_url + '.json')
+        turnout = election_info['result']['primaryTopic']['turnout']
+
+        # Extract detailed election info
+        detailed_election_url = election_info['result']['primaryTopic']['election']['_about']
+        detailed_election_info = fetch_json(detailed_election_url + '.json')
+        election_type = detailed_election_info['result']['primaryTopic']['electionType']
+        election_label = detailed_election_info['result']['primaryTopic']['label']['_value']
+
+        # Extract candidate info
+        candidate_urls = election_info['result']['primaryTopic']['candidate']
+
+        for candidate_url in candidate_urls:
+            candidate = fetch_json(candidate_url + '.json')
+
+            try:
+                vote_change_percentage = candidate['result']['primaryTopic']['voteChangePercentage']
+            except KeyError:
+                vote_change_percentage = None
+
+            votes = candidate['result']['primaryTopic']['numberOfVotes']
+            full_name = candidate['result']['primaryTopic']['fullName']['_value']
+            party = candidate['result']['primaryTopic']['party']['_value']
+
     break
