@@ -82,7 +82,11 @@ def main():
         for entry in entries:
             # Extract constituency info
             constituency_url = entry['constituency']['_about']
-            constituency_info = client.fetch_json(constituency_url + '.json')
+            try:
+                constituency_info = client.fetch_json(constituency_url + '.json')
+            except requests.exceptions.HTTPError:
+                logger.exception('HTTP Error')
+                continue
 
             constituency_type = constituency_info['result']['primaryTopic']['constituencyType']
             constituency_name = constituency_info['result']['primaryTopic']['label']['_value']
@@ -97,12 +101,20 @@ def main():
             # Extract election info
 
             election_url = entry['_about']
-            election_info = client.fetch_json(election_url + '.json')
+            try:
+                election_info = client.fetch_json(election_url + '.json')
+            except requests.exceptions.HTTPError:
+                logger.exception('HTTP Error')
+                continue
             turnout = election_info['result']['primaryTopic']['turnout']
 
             # Extract detailed election info
             detailed_election_url = election_info['result']['primaryTopic']['election']['_about']
-            detailed_election_info = client.fetch_json(detailed_election_url + '.json')
+            try:
+                detailed_election_info = client.fetch_json(detailed_election_url + '.json')
+            except requests.exceptions.HTTPError:
+                logger.exception('HTTP Error')
+                continue
             election_type = detailed_election_info['result']['primaryTopic']['electionType']
             election_label = detailed_election_info['result']['primaryTopic']['label']['_value']
 
@@ -121,7 +133,11 @@ def main():
             candidate_urls = election_info['result']['primaryTopic']['candidate']
 
             for candidate_url in candidate_urls:
-                candidate = client.fetch_json(candidate_url + '.json')
+                try:
+                    candidate = client.fetch_json(candidate_url + '.json')
+                except requests.exceptions.HTTPError:
+                    logger.exception('HTTP Error')
+                    continue
 
                 try:
                     vote_change_percentage = candidate['result']['primaryTopic']['voteChangePercentage']
