@@ -43,7 +43,7 @@ class Votes(Base):
 
     id = Column(Integer, primary_key=True)
     votes = Column(Integer, nullable=False)
-    vote_change_percentage = Column(Float, nullable=False)
+    vote_change_percentage = Column(Float, nullable=True)
     party = Column(String, nullable=False)
     candidate_id = Column(Integer, ForeignKey('candidates.id'))
     constituency_id = Column(Integer, ForeignKey('constituencies.id'))
