@@ -9,6 +9,7 @@ import logging
 from tqdm import trange
 
 parser = argparse.ArgumentParser()
+parser.add_argument('sqlalchemy_url')
 parser.add_argument('-v', '--verbose', action='count')
 args = parser.parse_args()
 
@@ -54,7 +55,7 @@ def get_or_create(session, model, defaults=None, **kwargs):
 
 
 def main():
-    engine, Session = models.create_engine_and_session('sqlite:////tmp/elections.db', echo=args.verbose is not None and args.verbose >= 2)
+    engine, Session = models.create_engine_and_session(args.sqlalchemy_url, echo=args.verbose is not None and args.verbose >= 2)
     models.reset_db(engine)
     session = Session()
 
