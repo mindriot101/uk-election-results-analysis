@@ -29,7 +29,7 @@ class Client(object):
 
     def fetch_json(self, url):
         url = self.update_url(url)
-        logger.debug('sending request to %s', url)
+        logger.info('sending request to %s', url)
         r = self.session.get(url)
         r.raise_for_status()
         return r.json()
@@ -68,7 +68,6 @@ def main():
     logger.info('Making %s requests', n_requests)
 
     for request_id in range(n_requests):
-        logger.info('Request %s of %s', request_id + 1, n_requests)
         election_results = client.fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
         entries = election_results['result']['items']
 
