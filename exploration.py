@@ -6,7 +6,7 @@ import functools
 import models
 import argparse
 import logging
-
+from tqdm import trange
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', action='count')
@@ -67,7 +67,7 @@ def main():
     n_requests = total_results // page_size + 1
     logger.info('Making %s requests', n_requests)
 
-    for request_id in range(n_requests):
+    for request_id in trange(n_requests):
         election_results = client.fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id + 1}')
         entries = election_results['result']['items']
 
