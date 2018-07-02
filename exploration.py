@@ -10,6 +10,7 @@ from tqdm import trange
 
 parser = argparse.ArgumentParser()
 parser.add_argument('sqlalchemy_url')
+parser.add_argument('-n', '--n-per-page', required=False, default=10, type=int)
 parser.add_argument('-v', '--verbose', action='count')
 args = parser.parse_args()
 
@@ -59,7 +60,7 @@ def main():
     models.reset_db(engine)
     session = Session()
 
-    page_size = 256
+    page_size = args.n_per_page
 
     client = Client()
     entries = client.fetch_json(f'http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}')
