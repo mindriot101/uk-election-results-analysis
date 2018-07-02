@@ -70,8 +70,13 @@ def main():
     logger.info('Making %s requests', n_requests)
 
     for request_id in trange(n_requests):
-        election_results = client.fetch_json('http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id}'.format(
-            page_size=page_size, request_id=request_id + 1))
+        try:
+            election_results = client.fetch_json('http://lda.data.parliament.uk/electionresults.json?_pageSize={page_size}&_page={request_id}'.format(
+                page_size=page_size, request_id=request_id + 1))
+        except requests.exceptions.HTTPError:
+            logger.exception('HTTP Error')
+            continue
+
         entries = election_results['result']['items']
 
         for entry in entries:
