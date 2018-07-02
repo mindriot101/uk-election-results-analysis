@@ -63,4 +63,8 @@ for request_id in range(n_requests):
             full_name = candidate['result']['primaryTopic']['fullName']['_value']
             party = candidate['result']['primaryTopic']['party']['_value']
 
+            break
+
+        break
+
     break
