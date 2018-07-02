@@ -22,8 +22,10 @@ for election in elections:
 
     for candidate_url in candidates:
         candidate = FETCH candidate_url
-        vote_change_percentage = candidate |> ???
-        votes = candidate |> ???
-        full_name = candidate |> ???
-        party = candidate |> ???
+        vote_change_percentage = candidate |> result |> primaryTopic |> voteChangePercentage
+        votes = candidate |> result |> primaryTopic |>
+numberOfVotes
+        full_name = candidate |> result |> primaryTopic |> fullName |>
+_value
+        party = candidate |> result |> primaryTopic |> party |> _value
 ```
