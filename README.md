@@ -19,6 +19,8 @@ for election in elections:
     about_link = election |> _about
     details = FETCH about_link
     candidates = details |> result |> primaryTopic |> candidate
+    turnout = details |> result |> primaryTopic |> 
+turnout
 
     for candidate_url in candidates:
         candidate = FETCH candidate_url
