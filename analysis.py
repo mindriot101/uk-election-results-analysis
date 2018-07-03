@@ -23,7 +23,12 @@ if __name__ == '__main__':
     engine, Session = create_engine_and_session(args.sqlalchemy_url)
     session = Session()
 
-    query = session.query(Votes)
-    query = query.join(Election).filter(Election.type.ilike('%general%'))
-    print(query.first())
+    # Get distinct general elections
+    query = session.query(Election.label).filter(Election.type.ilike('%general%'))
+    distinct_general_election_names = [row[0] for row in query]
+
+    for election_name in distinct_general_election_names:
+        query = session.query(Votes)
+        query = query.join(Election).filter(Election.label == election_name)
+        break
 
