@@ -28,6 +28,19 @@ def top_voted_for(session):
         print(name, votes, election, constituency)
 
 
+def coventry_history(session):
+    query = session.query(Constituency).filter(Constituency.name.ilike('%coventry%'))
+    query = query.join(Votes).join(Election)
+    query = query.filter(Election.type.ilike('%general%'))
+    query = query.group_by(Constituency, Election)
+    query = query.with_entities(
+            func.sum(Votes.votes), Election.label, Constituency.name)
+    logger.info('QUERY: \n%s\n', query)
+
+    for votes, election, name in query:
+        print(votes, election, name)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('sqlalchemy_url')
@@ -36,5 +49,6 @@ if __name__ == '__main__':
     engine, Session = create_engine_and_session(args.sqlalchemy_url)
     session = Session()
 
-    top_voted_for(session)
+    # top_voted_for(session)
+    coventry_history(session)
 
