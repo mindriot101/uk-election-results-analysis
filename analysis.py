@@ -7,12 +7,24 @@ from models import (create_engine_and_session,
         Election,
         Turnout,
         Votes)
+from sqlalchemy.sql import func
 import logging
 import argparse
 
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
+
+
+def top_voted_for(session):
+    query = session.query(Candidate).join(Votes).join(Election).join(Constituency)
+    query = query.order_by(Votes.votes.desc())
+    query = query.limit(10)
+    query = query.with_entities(
+            Candidate.full_name, Votes.votes, Election.label, Constituency.name)
+
+    for name, votes, election, constituency in query:
+        print(name, votes, election, constituency)
 
 
 if __name__ == '__main__':
@@ -23,12 +35,5 @@ if __name__ == '__main__':
     engine, Session = create_engine_and_session(args.sqlalchemy_url)
     session = Session()
 
-    # Get distinct general elections
-    query = session.query(Election.label).filter(Election.type.ilike('%general%'))
-    distinct_general_election_names = [row[0] for row in query]
-
-    for election_name in distinct_general_election_names:
-        query = session.query(Votes)
-        query = query.join(Election).filter(Election.label == election_name)
-        break
+    top_voted_for(session)
 
