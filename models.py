@@ -12,6 +12,9 @@ class Candidate(Base):
     id = Column(Integer, primary_key=True)
     full_name = Column(String, nullable=False, unique=True)
 
+    def __repr__(self):
+        return '<Candidate {}>'.format(self.full_name)
+
 
 class Constituency(Base):
     __tablename__ = 'constituencies'
@@ -21,6 +24,9 @@ class Constituency(Base):
     name = Column(String, nullable=False, unique=True)
     os_name = Column(String, nullable=False)
 
+    def __repr__(self):
+        return '<Constituency {}>'.format(self.name)
+
 
 class Election(Base):
     __tablename__ = 'elections'
@@ -28,6 +34,9 @@ class Election(Base):
     id = Column(Integer, primary_key=True)
     type = Column(String, nullable=False)
     label = Column(String, nullable=False, unique=True)
+
+    def __repr__(self):
+        return '<Election {}>'.format(self.label)
 
 
 class Turnout(Base):
@@ -52,6 +61,9 @@ class Turnout(Base):
     __table_args__ = (
             UniqueConstraint('election_id', 'constituency_id'),
             )
+
+    def __repr__(self):
+        return '<Turnout {}>'.format(self.turnout)
 
 
 class Votes(Base):
@@ -82,6 +94,11 @@ class Votes(Base):
             UniqueConstraint('candidate_id', 'constituency_id',
                 'election_id'),
             )
+
+    def __repr__(self):
+        return '<Votes {} for {} ({}) in {} in {}>'.format(
+                self.votes, self.candidate.full_name, self.party,
+                self.election.label, self.constituency.name)
 
 
 def reset_db(engine):
