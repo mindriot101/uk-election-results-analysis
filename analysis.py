@@ -12,7 +12,7 @@ import logging
 import argparse
 
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -22,6 +22,7 @@ def top_voted_for(session):
     query = query.limit(10)
     query = query.with_entities(
             Candidate.full_name, Votes.votes, Election.label, Constituency.name)
+    logger.info('QUERY: \n%s\n', query)
 
     for name, votes, election, constituency in query:
         print(name, votes, election, constituency)
